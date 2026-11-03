@@ -292,8 +292,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
   rigid: {fileID: -5224738475205388027}
   jumpSpeed: 12
-  jumpSound: {fileID: 6712663655390726669}
-  dieSound: {fileID: 6712663655390726669}
-  musicSound: {fileID: 6712663655390726669}
+  jumpSound: {fileID: 0}
+  dieSound: {fileID: 0}
+  musicSound: {fileID: 0}
   isGrounded: 0
   animator: {fileID: 0}

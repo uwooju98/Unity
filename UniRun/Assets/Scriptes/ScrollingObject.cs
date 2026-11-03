@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ScrollingObject : MonoBehaviour
 {
-    public float speed = 8;
+    public float speed = 15;
 
     private PlayerController player;
 
