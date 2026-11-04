@@ -31,7 +31,6 @@ public class Practice1 : MonoBehaviour
             FileDelete();
             PrintAll();
         }
-
     }
 
 

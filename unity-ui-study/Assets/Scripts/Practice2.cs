@@ -1,0 +1,100 @@
+using System.IO;
+using UnityEngine;
+
+public class Practice2 : MonoBehaviour
+{
+    private string path;
+    private string originalPath;
+    private string encryptedPath;
+    private string decryptedPath;
+
+
+    private void Start()
+    {
+        path = Path.Combine(Application.persistentDataPath, "FileStreamPractice");
+        originalPath = Path.Combine(path, "original.txt");
+        encryptedPath = Path.Combine(path, "encrypted.dat");
+        decryptedPath = Path.Combine(path, "decrypted.txt");
+
+        Debug.Log(path);
+
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+            Debug.Log("폴더 생성");
+        }
+
+        CreatOriginal();
+        Encryption();
+        Decryption();
+        AllRead();
+    }
+
+
+    private void CreatOriginal()
+    {
+        File.WriteAllText(Path.Combine(path, "original.txt"), "암호화연습");
+
+        Debug.Log("원본 생성");
+    }
+
+
+    private void AllRead()
+    {
+        Debug.Log($"원본: {File.ReadAllText(originalPath)}");
+        Debug.Log($"암호화: {File.ReadAllText(encryptedPath)}");
+        Debug.Log($"복호화: {File.ReadAllText(decryptedPath)}");
+    }
+
+
+    private void Encryption()
+    {
+        int read;
+
+        if (!File.Exists(originalPath))
+        {
+            Debug.Log("원본 파일 없음");
+            return;
+        }
+
+        using (FileStream originalInput = new FileStream(originalPath, FileMode.Open))
+        using (FileStream encryptedOutput = new FileStream(encryptedPath, FileMode.Create))
+        {
+            while ((read = originalInput.ReadByte()) != -1)
+            {
+                byte encryptedByte = (byte)(read ^ 0xAB);
+
+                encryptedOutput.WriteByte(encryptedByte);
+
+                Debug.Log($"원본: {read}, 암호화: {encryptedByte}");
+            }
+        }
+    }
+
+
+    private void Decryption()
+    {
+        int read;
+
+        if (!File.Exists(encryptedPath))
+        {
+            Debug.Log("암호화 파일 없음");
+            return;
+        }
+
+        using (FileStream encryptedInput = new FileStream(encryptedPath, FileMode.Open))
+        using (FileStream decryptedOutput = new FileStream(decryptedPath, FileMode.Create))
+        {
+            while ((read = encryptedInput.ReadByte()) != -1)
+            {
+                byte decryptedByte = (byte)(read ^ 0xAB);
+
+                decryptedOutput.WriteByte(decryptedByte);
+
+                Debug.Log($"암호화: {read}, 복호화: {decryptedByte}");
+            }
+        }
+    }
+
+
+}
