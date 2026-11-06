@@ -8,13 +8,15 @@ public class Practice2 : MonoBehaviour
     private string encryptedPath;
     private string decryptedPath;
 
+    private const byte Key = 0xAB;
+
 
     private void Start()
     {
         path = Path.Combine(Application.persistentDataPath, "FileStreamPractice");
         originalPath = Path.Combine(path, "original.txt");
         encryptedPath = Path.Combine(path, "encrypted.dat");
-        decryptedPath = Path.Combine(path, "decrypted.txt");
+        decryptedPath = Path.Combine(path, "decrypted.txt"); //질문 순서 중요한가
 
         Debug.Log(path);
 
@@ -33,7 +35,7 @@ public class Practice2 : MonoBehaviour
 
     private void CreatOriginal()
     {
-        File.WriteAllText(Path.Combine(path, "original.txt"), "암호화연습");
+        File.WriteAllText(originalPath, "암호화연습");
 
         Debug.Log("원본 생성");
     }
@@ -42,15 +44,13 @@ public class Practice2 : MonoBehaviour
     private void AllRead()
     {
         Debug.Log($"원본: {File.ReadAllText(originalPath)}");
-        Debug.Log($"암호화: {File.ReadAllText(encryptedPath)}");
+        Debug.Log($"암호화: {File.ReadAllText(encryptedPath)}");//asd
         Debug.Log($"복호화: {File.ReadAllText(decryptedPath)}");
     }
 
 
     private void Encryption()
     {
-        int read;
-
         if (!File.Exists(originalPath))
         {
             Debug.Log("원본 파일 없음");
@@ -60,9 +60,11 @@ public class Practice2 : MonoBehaviour
         using (FileStream originalInput = new FileStream(originalPath, FileMode.Open))
         using (FileStream encryptedOutput = new FileStream(encryptedPath, FileMode.Create))
         {
+            int read;
+
             while ((read = originalInput.ReadByte()) != -1)
             {
-                byte encryptedByte = (byte)(read ^ 0xAB);
+                byte encryptedByte = (byte)(read ^ Key);
 
                 encryptedOutput.WriteByte(encryptedByte);
 
@@ -74,8 +76,6 @@ public class Practice2 : MonoBehaviour
 
     private void Decryption()
     {
-        int read;
-
         if (!File.Exists(encryptedPath))
         {
             Debug.Log("암호화 파일 없음");
@@ -85,9 +85,11 @@ public class Practice2 : MonoBehaviour
         using (FileStream encryptedInput = new FileStream(encryptedPath, FileMode.Open))
         using (FileStream decryptedOutput = new FileStream(decryptedPath, FileMode.Create))
         {
+            int read;
+
             while ((read = encryptedInput.ReadByte()) != -1)
             {
-                byte decryptedByte = (byte)(read ^ 0xAB);
+                byte decryptedByte = (byte)(read ^ Key);
 
                 decryptedOutput.WriteByte(decryptedByte);
 
