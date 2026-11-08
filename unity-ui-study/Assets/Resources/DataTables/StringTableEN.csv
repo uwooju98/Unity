@@ -1,13 +1,5 @@
 Id,String
-Hellow,hellow
-NoHellow,nohellow
-Hi,hi
-HiHi,hihi
-ITEM_1_NAME,Item 1 Name
-ITEM_2_NAME,Item 2 Name
-ITEM_3_NAME,Item 3 Name
-ITEM_4_NAME,Item 4 Name
-ITEM_1_DESC,Item 1 Description
-ITEM_2_DESC,Item 2 Description
-ITEM_3_DESC,Item 3 Description
-ITEM_4_DESC,Item 4 Description
+CHAR_1_NAME,Warrior
+CHAR_2_NAME,Archer
+CHAR_3_NAME,Noob
+CHAR_4_NAME,Tank

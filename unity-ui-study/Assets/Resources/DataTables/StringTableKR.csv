@@ -1,13 +1,5 @@
 Id,String
-Hellow,안녕
-NoHellow,안안녕
-Hi,하이
-HiHi,하이하이
-ITEM_1_NAME,아이템 1 이름
-ITEM_2_NAME,아이템 2 이름
-ITEM_3_NAME,아이템 3 이름
-ITEM_4_NAME,아이템 4 이름
-ITEM_1_DESC,아이템 1 설명
-ITEM_2_DESC,아이템 2 설명
-ITEM_3_DESC,아이템 3 설명
-ITEM_4_DESC,아이템 4 설명
+CHAR_1_NAME,전사님
+CHAR_2_NAME,궁수님
+CHAR_3_NAME,벌레
+CHAR_4_NAME,탱커님
