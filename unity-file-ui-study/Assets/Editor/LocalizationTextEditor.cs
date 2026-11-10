@@ -1,0 +1,20 @@
+using UnityEditor;
+using UnityEngine;
+
+[CustomEditor(typeof(LocalizationText))]
+public class LocalizationTextEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        var text = target as LocalizationText;
+        var newId = EditorGUILayout.TextField("String ID", text.stringId);
+        var newLang = (Languages)EditorGUILayout.EnumPopup("Language", text.editorLang);
+        if (newId != text.stringId || newLang != text.editorLang)
+        {
+            text.stringId = newId;
+            text.editorLang = newLang;
+            text.OnChangedLanguage(text.editorLang);
+            EditorUtility.SetDirty(text);
+        }
+    }
+}

@@ -1,0 +1,41 @@
+Id,String
+,
+HELLO,やあ
+BYE,じゃあな
+YOU_DIE,あなたは死ぬ
+ITEM_1_NAME,剣
+ITEM_2_NAME,盾
+ITEM_3_NAME,弓
+ITEM_4_NAME,ポーション
+ITEM_1_DESC,これは剣だ。
+ITEM_2_DESC,これは盾だ。
+ITEM_3_DESC,これは弓だ。
+ITEM_4_DESC,これはポーションだ。
+CHAR_1_NAME,戦士
+CHAR_2_NAME,弓使い
+CHAR_3_NAME,盗賊
+CHAR_4_NAME,聖騎士
+NAME,名前
+DESC,説明
+TYPE,タイプ
+VALUE,値
+COST,コスト
+WEAPON,武器
+EQUIP,装備
+CONSUMABLE,消費品
+LOAD,ロード
+SAVE,セーブ
+ITEM_CREATE,アイテム作成
+ITEM_DELETE,アイテム削除
+SORT,並び替え
+SORT_DATE_ASC,日付 (昇順)
+SORT_DATE_DESC,日付 (降順)
+SORT_NAME_ASC,名前 (昇順)
+SORT_NAME_DESC,名前 (降順)
+FILTER,フィルター
+FILTER_ALL,すべて
+FILTER_WEAPON,武器
+FILTER_EQUIP,装備
+FILTER_CONSUMABLE,消費品
+INVENTORY,インベントリ
+ITEM_INFO,アイテム情報

@@ -1,0 +1,43 @@
+Id,String
+,
+HELLO,안녕
+BYE,잘가
+YOU_DIE,너 죽음
+ITEM_1_NAME,검
+ITEM_2_NAME,방패
+ITEM_3_NAME,활
+ITEM_4_NAME,물약
+ITEM_1_DESC,이것은 검이다.
+ITEM_2_DESC,이것은 방패다.
+ITEM_3_DESC,이것은 활이다.
+ITEM_4_DESC,이것은 물약이다.
+CHAR_1_NAME,전사
+CHAR_2_NAME,궁수
+CHAR_3_NAME,도적
+CHAR_4_NAME,성기사
+NAME,이름
+DESC,설명
+TYPE,타입
+VALUE,밸류
+COST,코스트
+WEAPON,무기
+EQUIP,장비
+CONSUMABLE,소모품
+LOAD,불러오기
+SAVE,저장하기
+ITEM_CREATE,아이템 생성
+ITEM_DELETE,아이템 삭제
+SORT,정렬
+SORT_DATE_ASC,날짜 (오름차순)
+SORT_DATE_DESC,날짜 (내림차순)
+SORT_NAME_ASC,이름 (오름차순)
+SORT_NAME_DESC,이름 (내림차순)
+FILTER,필터
+FILTER_ALL,전체
+FILTER_WEAPON,무기
+FILTER_EQUIP,장비
+FILTER_CONSUMABLE,소모품
+INVENTORY,인벤토리
+ITEM_INFO,아이템 정보
+PLAYER_LIST,플레이어 리스트
+PLAYER_INFO,플레이어 정보

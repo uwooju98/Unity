@@ -1,0 +1,41 @@
+Id,String
+,
+HELLO,Hello~
+BYE,Bye~
+YOU_DIE,You Die...
+ITEM_1_NAME,Sword
+ITEM_2_NAME,Shield
+ITEM_3_NAME,Bow
+ITEM_4_NAME,Potion
+ITEM_1_DESC,This is a sword.
+ITEM_2_DESC,This is a shield.
+ITEM_3_DESC,This is a bow.
+ITEM_4_DESC,This is a potion.
+CHAR_1_NAME,Warrior
+CHAR_2_NAME,Archer
+CHAR_3_NAME,Rogue
+CHAR_4_NAME,Paladin
+NAME,Name
+DESC,Description
+TYPE,Type
+VALUE,Value
+COST,Cost
+WEAPON,Weapon
+EQUIP,Equipment
+CONSUMABLE,Consumable
+LOAD,Load
+SAVE,Save
+ITEM_CREATE,Create Item
+ITEM_DELETE,Delete Item
+SORT,Sort
+SORT_DATE_ASC,Date (Ascending)
+SORT_DATE_DESC,Date (Descending)
+SORT_NAME_ASC,Name (Ascending)
+SORT_NAME_DESC,Name (Descending)
+FILTER,Filter
+FILTER_ALL,All
+FILTER_WEAPON,Weapon
+FILTER_EQUIP,Equipment
+FILTER_CONSUMABLE,Consumable
+INVENTORY,Inventory
+ITEM_INFO,Item Info

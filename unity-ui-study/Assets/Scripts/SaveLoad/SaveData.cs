@@ -1,4 +1,6 @@
+using NUnit.Framework;
 using UnityEngine;
+using static UnityEngine.LowLevelPhysics2D.PhysicsLayers;
 
 public abstract class SaveData
 {
@@ -8,22 +10,45 @@ public abstract class SaveData
 
 }
 
-public class SaveDataV4 : SaveDataV2
+public class SaveDataV5 : SaveData
 {
-    public string firstName { get; set; } = string.Empty;
-    public string lastName { get; set; } = string.Empty;
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public int Gold { get; set; } = 100;
+
+    public List<SaveItemData> ItemList = new List<SaveItemData>();
+
+    public SaveDataV5()
+    {
+
+    }
+
+
+}
+
+    public class SaveDataV4 : SaveData
+{
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public int Gold { get; set; } = 100;
     public SaveDataV4()
     {
         Version = 4;
     }
     public override SaveData VersionUp()
     {
-        throw new System.NotImplementedException();
+        var data = new SaveDataV5();
+        data.FirstName = FirstName;
+        data.LastName = LastName;
+        data.Gold = Gold;
+        return data;
     }
 }
 
-public class SaveDataV3 : SaveDataV2
+public class SaveDataV3 : SaveData
 {
+    public string PlayerName { get; set; } = string.Empty;
+    public int Gold { get; set; } = 100;
     public int Exp { get; set; } = 100;
     public SaveDataV3()
     {
@@ -33,8 +58,8 @@ public class SaveDataV3 : SaveDataV2
     {
         var data = new SaveDataV4();
         string[] name = PlayerName.Split(' ', System.StringSplitOptions.RemoveEmptyEntries);
-        data.firstName = name[0];
-        data.lastName = name[1];
+        data.FirstName = name[0];
+        data.LastName = name[1];
         data.Gold = Gold;
         return data;
     }
