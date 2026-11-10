@@ -76,14 +76,14 @@ public class UiInventory : MonoBehaviour
     }
     public void OnSave()
     {
-        SaveLoadManager.Data.ItemList = uiItemSlotList.GetSaveItemDataList();
-        SaveLoadManager.Save();
+        //SaveLoadManager.Data.ItemList = uiItemSlotList.GetSaveItemDataList();
+        //SaveLoadManager.Save();
     }
 
     public void OnLoad()
     {
-        SaveLoadManager.Load();
-        uiItemSlotList.SetSaveItemDataList(SaveLoadManager.Data.ItemList);
+        //SaveLoadManager.Load();
+        //uiItemSlotList.SetSaveItemDataList(SaveLoadManager.Data.ItemList);
     }
 
     public void OnCreateItem()

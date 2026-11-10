@@ -79,11 +79,11 @@ public class UiItemSlotList : MonoBehaviour
 
     private List<UiItemSlot> uiSlotlist = new List<UiItemSlot>();
 
-    private List<SaveItemData> saveItemDataList;
+    private List<SaveItemData> saveItemDataList = new List<SaveItemData>();
 
     public void SetSaveItemDataList(List<SaveItemData> source)
     {
-        saveItemDataList = new List<SaveItemData>(source);
+        saveItemDataList = source == null ? new List<SaveItemData>() : new List<SaveItemData>(source);
         UpdateSlot();
     }
 

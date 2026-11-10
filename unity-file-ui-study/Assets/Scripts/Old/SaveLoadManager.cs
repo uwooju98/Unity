@@ -73,7 +73,7 @@ public static class SaveLoadManager
                 dataSave = dataSave.VersionUp();
                 Debug.Log($"[SaveLoad] 마이그레이션 v{pervVersion} -> v{dataSave.Version}");
             }
-            Data = dataSave as SaveDataVC;
+            //Data = dataSave as SaveDataVC;
             return true;
         }
         catch

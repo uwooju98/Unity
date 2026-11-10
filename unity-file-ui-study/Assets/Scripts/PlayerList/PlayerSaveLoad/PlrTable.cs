@@ -19,10 +19,6 @@ public class PlrTable : DataTable
             {
                 table.Add(plr.Id, plr);
             }
-            else
-            {
-                Debug.LogError("플레이어 아이디 중복");
-            }
         }
     }
     public PlrData Get(string id)

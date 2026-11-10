@@ -39,3 +39,7 @@ FILTER_EQUIP,Equipment
 FILTER_CONSUMABLE,Consumable
 INVENTORY,Inventory
 ITEM_INFO,Item Info
+PLAYER_LIST,Player List
+PLAYER_INFO,Player Information
+PLAYER_CREATE,Create Player
+PLAYER_DELETE,Delete Player

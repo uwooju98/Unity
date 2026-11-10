@@ -29,6 +29,10 @@ public static class DataTableManager
         var itemTable = new ItemTable();
         itemTable.Load(DataTableIds.Item);
         tables.Add(DataTableIds.Item, itemTable);
+
+        var plrTable = new PlrTable();
+        plrTable.Load(DataTableIds.Plr);
+        tables.Add(DataTableIds.Plr, plrTable);
     }
 
     public static T Get<T>(string id)

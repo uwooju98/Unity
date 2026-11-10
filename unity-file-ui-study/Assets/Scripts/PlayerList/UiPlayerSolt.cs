@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class UiPlayerSolt : MonoBehaviour
 {
@@ -15,21 +14,22 @@ public class UiPlayerSolt : MonoBehaviour
 
     public readonly string[] FilteringOptionNames =
     {
-        "FILTER_ALL",
-        "FILTER_WEAPON",
-        "FILTER_EQUIP",
-        "FILTER_CONSUMABLE",
+    "FILTER_ALL",
+    "CHAR_1_NAME",
+    "CHAR_2_NAME",
+    "CHAR_3_NAME",
+    "CHAR_4_NAME",
     };
+
     public TMP_Dropdown sorting;
     public TMP_Dropdown filtering;
 
-    public UiItemSlotList uiItemSlotList;
+    public UiPlayerSoltList uiPlayerSoltList;
 
     private void OnEnable()
     {
         UpdateDropDownOptions();
 
-        OnLoad();
         OnChangeSorting(sorting.value);
         OnChangeFiltering(filtering.value);
 
@@ -39,59 +39,67 @@ public class UiPlayerSolt : MonoBehaviour
     private void OnDisable()
     {
         Variables.OnLanguageChanged -= UpdateDropDownOptions;
-        OnSave();
     }
 
     public void UpdateDropDownOptions()
     {
-        var stringTalbe = DataTableManager.StringTable;
-        sorting.ClearOptions();
+        var stringTable = DataTableManager.StringTable;
+
+        int sortingIndex = sorting.value;
+        int filteringIndex = filtering.value;
+
         var options = new List<string>();
+
         foreach (var id in SortingOptionNames)
         {
-            options.Add(stringTalbe.Get(id));
+            options.Add(stringTable.Get(id));
         }
+
+        sorting.ClearOptions();
         sorting.AddOptions(options);
+        sorting.SetValueWithoutNotify(Mathf.Clamp(sortingIndex, 0, options.Count - 1));
+        sorting.RefreshShownValue();
+
         options.Clear();
-        filtering.ClearOptions();
-        options = new List<string>();
+
         foreach (var id in FilteringOptionNames)
         {
-            options.Add(stringTalbe.Get(id));
+            options.Add(stringTable.Get(id));
         }
+
+        filtering.ClearOptions();
         filtering.AddOptions(options);
+        filtering.SetValueWithoutNotify(Mathf.Clamp(filteringIndex, 0, options.Count - 1));
+        filtering.RefreshShownValue();
     }
 
+    public void OnCreatePlayer()
+    {
+        if (uiPlayerSoltList == null)
+        {
+            return;
+        }
+
+        uiPlayerSoltList.AddRandomPlayer();
+    }
+
+    public void OnRemovePlayer()
+    {
+        if (uiPlayerSoltList == null)
+        {
+            return;
+        }
+
+        uiPlayerSoltList.RemoveSelectedPlayer();
+    }
 
     public void OnChangeSorting(int index)
     {
-        uiItemSlotList.Sorting = (UiItemSlotList.SortingOptions)index;
+        uiPlayerSoltList.Sorting = (UiPlayerSoltList.SortingOptions)index;
     }
 
     public void OnChangeFiltering(int index)
     {
-        uiItemSlotList.Filtering = (UiItemSlotList.FitteringOptions)index;
+        uiPlayerSoltList.Filtering = (UiPlayerSoltList.FilteringOptions)index;
     }
-    public void OnSave()
-    {
-        SaveLoadManager.Data.pl = uiItemSlotList.GetSaveItemDataList();
-        SaveLoadManager.Save();
-    }
-
-    public void OnLoad()
-    {
-        SaveLoadManager.Load();
-        uiItemSlotList.SetSaveItemDataList(SaveLoadManager.Data.ItemList);
-    }
-
-    public void OnCreateItem()
-    {
-        uiItemSlotList.AddRandomItem();
-    }
-
-    public void OnRemoveItem()
-    {
-        uiItemSlotList.RemoveItem();
-    }
-
 }
