@@ -48,21 +48,21 @@ public class LinkedListTest : MonoBehaviour
         list.Remove(b);
         Expect(string.Join(" <-> ", list), "시작 <-> A <-> C <-> D", "B 노드 제거");
 
-        //Debug.Log("\n4. 값으로 제거 / 양 끝 제거:");
-        //Expect(list.Remove("D"), true, "Remove(\"D\")");
-        //list.RemoveFirst();
-        //list.RemoveLast();
-        //Expect($"{string.Join(" <-> ", list)} (개수: {list.Count})", "A (개수: 1)", "남은 내용");
+        Debug.Log("\n4. 값으로 제거 / 양 끝 제거:");
+        Expect(list.Remove("D"), true, "Remove(\"D\")");
+        list.RemoveFirst();
+        list.RemoveLast();
+        Expect($"{string.Join(" <-> ", list)} (개수: {list.Count})", "A (개수: 1)", "남은 내용");
 
-        //Debug.Log("\n5. 다른 리스트의 노드 검증:");
-        //var other = new DoublyLinkedList<string>();
-        //var foreign = other.AddLast("X");
-        //ExpectThrows<InvalidOperationException>(() => list.Remove(foreign), "예외 발생");
+        Debug.Log("\n5. 다른 리스트의 노드 검증:");
+        var other = new DoublyLinkedList<string>();
+        var foreign = other.AddLast("X");
+        ExpectThrows<InvalidOperationException>(() => list.Remove(foreign), "예외 발생");
 
-        //Debug.Log("\n6. 이미 제거된 노드 재사용 검증:");
-        //ExpectThrows<InvalidOperationException>(() => list.AddAfter(b, "Z"), "예외 발생");
+        Debug.Log("\n6. 이미 제거된 노드 재사용 검증:");
+        ExpectThrows<InvalidOperationException>(() => list.AddAfter(b, "Z"), "예외 발생");
 
-        //Debug.Log("\n=== DoublyLinkedList 테스트 완료 ===");
+        Debug.Log("\n=== DoublyLinkedList 테스트 완료 ===");
     }
 
 
