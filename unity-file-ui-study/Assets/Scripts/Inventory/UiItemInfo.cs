@@ -1,39 +1,48 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
-
-public class UiItemInfo2 : MonoBehaviour
+public class UiItemInfo : MonoBehaviour
 {
-    public static readonly string FormatString = "{0}: {1}";
-    public Image icon;
     public TMP_Text textName;
-    public TMP_Text textType;
-    public TMP_Text textValue;
-    public TMP_Text textCost;
-    public TMP_Text textDesc;
+    public Image icon;
+    public TMP_Text texType;
+    public TMP_Text texCost;
+    public TMP_Text texValue;
+    public TMP_Text texDesc;
+
+    private ItemData data;
 
     public void SetEmpty()
     {
-        icon.sprite = null;
-        icon.enabled = false;
+        data = null;
         textName.text = string.Empty;
-        textType.text = string.Empty;
-        textValue.text = string.Empty;
-        textCost.text = string.Empty;
-        textDesc.text = string.Empty;
+        icon.sprite = null;
+        texType.text = string.Empty;
+        texCost.text = string.Empty;
+        texValue.text = string.Empty;
+        texDesc.text = string.Empty;
     }
-    
-    public void SetItem(SaveItemData saveItemData)
+
+    public void SetItem(string id)
     {
-        var st = DataTableManager.StringTable;
-        var data = saveItemData.ItemData;
+        SetItem(DataTableManager.ItemTable.Get(id));
+    }
+
+    public void SetItem(ItemData data)
+    {
+        if (data == null)
+        {
+            SetEmpty();
+            return;
+        }
+
+        this.data = data;
+        textName.text = data.StringName;
         icon.sprite = data.SpriteIcon;
-        icon.enabled = true;
-        textName.text = string.Format(FormatString, st.Get("NAME"), data.StringName);
-        textType.text = string.Format(FormatString, st.Get("TYPE"), data.StringType);
-        textValue.text = string.Format(FormatString, st.Get("VALUE"), data.Value);
-        textCost.text = string.Format(FormatString, st.Get("COST"), data.Cost);
-        textDesc.text = string.Format(FormatString, st.Get("DESC"), data.Desc);
+        texType.text = data.Type.ToString();
+        texCost.text = data.Cost.ToString();
+        texValue.text = data.Value.ToString();
+        texDesc.text = data.StringDesc;
     }
 }
