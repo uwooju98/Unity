@@ -15,7 +15,7 @@ public class CircularDoublyLinkedListNode<T>
 
     // 사용자가 보는 링크 = 이음새(마지막 → 처음)에서 null을 돌려줘 원형을 숨긴다
     public CircularDoublyLinkedListNode<T> Next => next == null || next == List.First ? null : next;
-    public CircularDoublyLinkedListNode<T> Previous => prev == null || this == List.First ? null : prev;
+    public CircularDoublyLinkedListNode<T> Previous => prev == null || prev == List.Last ? null : prev;
 
     public CircularDoublyLinkedListNode(T value)
     {
@@ -81,10 +81,10 @@ public class CircularDoublyLinkedList<T> : IEnumerable<T>
         node.List = this;
 
         if (head == null)
-        {
-            head = node;
+        {      
             node.next = node;
             node.prev = node;
+            head = node;
         }
         else
         {
@@ -158,8 +158,22 @@ public class CircularDoublyLinkedList<T> : IEnumerable<T>
     public void Remove(CircularDoublyLinkedListNode<T> node)
     {
         ValidateNode(node);
+        //
+        //if (Count == 1) // head 만 있음
+        //{
+        //    head = null;
+        //}
+        //else
+        //{
+        //    node.prev.next = node.next;
+        //    node.next.prev = node.prev;
 
-
+        //    if (node == head)
+        //    {
+        //        head = node.next;
+        //    }
+        //}
+        //
         if (head == node && node == node.prev)
         {
             head = null;
@@ -205,6 +219,15 @@ public class CircularDoublyLinkedList<T> : IEnumerable<T>
 
     public IEnumerable<T> Backward()
     {
+        ////
+        //CircularDoublyLinkedListNode<T> current = Last;
+        //while(current != null)
+        //{
+        //    yield return current.Value;
+        //    current = current.prev;
+        //}
+
+        ////
         if (head == null)
         {
             yield break;
@@ -227,18 +250,27 @@ public class CircularDoublyLinkedList<T> : IEnumerable<T>
     public void Clear()
     {
         var current = head;
-
-        if (head != null)
-        {
-            do
+        ////
+        //for (int i = 0; i < Count; ++i)
+        //{
+        //    var next = current.next;
+        //    current.prev = null;
+        //    current.next = null;
+        //    current.List = null;
+        //    current = next;
+        //}
+        ////
+            if (head != null)
             {
-                var next = current.next;
-                current.prev = null;
-                current.next = null;
-                current.List = null;
-                current = next;
-            } while (current != head);
-        }
+                do
+                {
+                    var next = current.next;
+                    current.prev = null;
+                    current.next = null;
+                    current.List = null;
+                    current = next;
+                } while (current != head);
+            }
 
         head = null;
         Count = 0;

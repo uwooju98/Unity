@@ -1,0 +1,128 @@
+
+using System.Collections.Generic;
+using UnityEngine;
+
+public enum SpacingTypes
+{
+    Pow,
+    LevelOrder,
+    InOrder,
+}
+
+public class TreeVisualizer : MonoBehaviour
+{
+    public NodeVisualizer nodePrefab;
+
+    public SpacingTypes spacingType = SpacingTypes.Pow;
+    public float verticalSpacing = 2f;
+    public float horizontalSpacing = 2f;
+
+    private readonly Dictionary<object, Vector3> nodePositions = new Dictionary<object, Vector3>();
+    private Vector3 origin;
+
+    public void Visualize<TKey, TValue>(TreeNode<TKey, TValue> root)
+    {
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        nodePositions.Clear();
+
+        if (root == null)
+        {
+            return;
+        }
+
+        switch (spacingType)
+        {
+            case SpacingTypes.Pow:
+                AssignPositionsPow(
+                    root,
+                    Vector3.zero,
+                    horizontalSpacing * Mathf.Pow(2, root.Height - 3)
+                );
+                break;
+        }
+
+        origin = transform.position - nodePositions[root];
+
+        InstantiateSubTree(root);
+    }
+
+    private Vector3 PositionOf(object node)
+    {
+        return origin + nodePositions[node];
+    }
+
+    private void InstantiateSubTree<TKey, TValue>(TreeNode<TKey, TValue> node)
+    {
+        if (node == null)
+        {
+            return;
+        }
+
+        var view = Instantiate(
+            nodePrefab,
+            PositionOf(node),
+            Quaternion.identity,
+            transform
+        );
+
+        view.SetNode(node);
+
+        if (node.Left != null)
+        {
+            view.SetEdge(
+                view.LeftLineRenderer,
+                PositionOf(node.Left)
+            );
+        }
+        else
+        {
+            view.LeftLineRenderer.enabled = false;
+        }
+
+        if (node.Right != null)
+        {
+            view.SetEdge(
+                view.RightLineRenderer,
+                PositionOf(node.Right)
+            );
+        }
+        else
+        {
+            view.RightLineRenderer.enabled = false;
+        }
+
+        InstantiateSubTree(node.Left);
+        InstantiateSubTree(node.Right);
+    }
+
+    private void AssignPositionsPow<TKey, TValue>(
+        TreeNode<TKey, TValue> node,
+        Vector3 position,
+        float offset)
+    {
+        if (node == null)
+        {
+            return;
+        }
+
+        nodePositions[node] = position;
+
+        Vector3 below = position + Vector3.down * verticalSpacing;
+
+        AssignPositionsPow(
+            node.Left,
+            below + Vector3.left * offset,
+            offset * 0.5f
+        );
+
+        AssignPositionsPow(
+            node.Right,
+            below + Vector3.right * offset,
+            offset * 0.5f
+        );
+    }
+}

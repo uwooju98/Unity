@@ -1,6 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using TreeEditor;
+using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class BinarySearchTree<TKey, TValue> : IDictionary<TKey, TValue>
@@ -33,17 +37,26 @@ public class BinarySearchTree<TKey, TValue> : IDictionary<TKey, TValue>
         }
     }
 
-    public ICollection<TKey> Keys => throw new System.NotImplementedException();
+    public ICollection<TKey> Keys => InOrderTraversal().Select(kvp => kvp.Key).ToList(); //함수 만들어서 하는게 나음
 
-    public ICollection<TValue> Values => throw new System.NotImplementedException();
+    public ICollection<TValue> Values => InOrderTraversal().Select(kvp => kvp.Value).ToList();
 
-    public int Count { get; protected set; }
+    public int Count => CountNodes(root);
+
+    protected virtual int CountNodes(TreeNode<TKey, TValue> node)
+    {
+        if (node == null)
+        {
+            return 0;
+        }
+        return 1 + CountNodes(node.Left) + CountNodes(node.Right);
+    }
 
     public bool IsReadOnly => false;
 
     public virtual void Add(TKey key, TValue value)
     {
-        throw new System.NotImplementedException();
+        root = Add(root, key, value);
     }
 
     public virtual void Add(KeyValuePair<TKey, TValue> item)
@@ -51,7 +64,7 @@ public class BinarySearchTree<TKey, TValue> : IDictionary<TKey, TValue>
         Add(item.Key, item.Value);
     }
 
-    protected virtual TreeNode<TKey,TValue> Add(TreeNode<TKey, TValue> node, TKey key, TValue value)
+    protected virtual TreeNode<TKey, TValue> Add(TreeNode<TKey, TValue> node, TKey key, TValue value)
     {
         if (node == null)
         {
@@ -86,11 +99,11 @@ public class BinarySearchTree<TKey, TValue> : IDictionary<TKey, TValue>
         int compare = key.CompareTo(node.Key);
         if (compare < 0)
         {
-            node.Left = Add(node.Left, key, value);
+            node.Left = AddOrUpdate(node.Left, key, value);
         }
         else if (compare > 0)
         {
-            node.Right = Add(node.Right, key, value);
+            node.Right = AddOrUpdate(node.Right, key, value);
         }
         else
         {
@@ -113,7 +126,7 @@ public class BinarySearchTree<TKey, TValue> : IDictionary<TKey, TValue>
 
     public void Clear()
     {
-        throw new System.NotImplementedException();
+        root = null;
     }
 
     public bool Contains(KeyValuePair<TKey, TValue> item)
@@ -128,22 +141,90 @@ public class BinarySearchTree<TKey, TValue> : IDictionary<TKey, TValue>
 
     public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
     {
-        throw new System.NotImplementedException();
+        if (array == null)
+        {
+            throw new ArgumentNullException(nameof(array));
+        }
+        if (arrayIndex < 0 || arrayIndex > array.Length)
+        {
+            throw new ArgumentOutOfRangeException(nameof(arrayIndex));
+        }
+        if (array.Length - arrayIndex < Count)
+        {
+            throw new ArgumentException("배열 크기 부족");
+        }
+
+        foreach (var kvp in this)
+        {
+            array[arrayIndex++] = kvp;
+        }
     }
 
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
     {
-        throw new System.NotImplementedException();
+        return InOrderTraversal().GetEnumerator();
     }
 
     public bool Remove(TKey key)
     {
-        throw new System.NotImplementedException();
+        if (!ContainsKey(key))
+        {
+            return false;
+        }
+
+        root = Remove(root, key);
+        return true;
     }
 
     public bool Remove(KeyValuePair<TKey, TValue> item)
     {
-        throw new System.NotImplementedException();
+        return Remove(item.Key);
+    }
+
+    protected virtual TreeNode<TKey, TValue> Remove(TreeNode<TKey, TValue> node, TKey key)
+    {
+        if (node == null)
+        {
+            return null;
+        }
+
+        int compare = key.CompareTo(node.Key);
+        if (compare < 0)
+        {
+            node.Left = Remove(node.Left, key);
+        }
+        else if (compare > 0)
+        {
+            node.Right = Remove(node.Right, key);
+        }
+        else
+        {
+            if (node.Left == null)
+            {
+                return node.Right;
+            }
+            if (node.Right == null)
+            {
+                return node.Left;
+            }
+
+            var minNode = FindMin(node.Right);
+            node.Key = minNode.Key;
+            node.Value = minNode.Value;
+            node.Right = Remove(node.Right, minNode.Key);
+        }
+
+        UpdateHeight(node);
+        return node;
+    }
+
+    protected virtual TreeNode<TKey, TValue> FindMin(TreeNode<TKey, TValue> node)
+    {
+        while (node.Left != null)
+        {
+            node = node.Left;
+        }
+        return node;
     }
 
     public bool TryGetValue(TKey key, out TValue value)
@@ -179,5 +260,115 @@ public class BinarySearchTree<TKey, TValue> : IDictionary<TKey, TValue>
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
+    }
+
+    public virtual IEnumerable<KeyValuePair<TKey, TValue>> InOrderTraversal()
+    {
+        return InOrderTraversal(root);
+    }
+
+    private IEnumerable<KeyValuePair<TKey, TValue>> InOrderTraversal(
+    TreeNode<TKey, TValue> node)
+    {
+        if (node == null)
+        {
+            yield break;
+        }
+
+        foreach (var item in InOrderTraversal(node.Left))
+        {
+            yield return item;
+        }
+
+        yield return new KeyValuePair<TKey, TValue>(node.Key, node.Value);
+
+        foreach (var item in InOrderTraversal(node.Right))
+        {
+            yield return item;
+        }
+    }
+
+    public virtual IEnumerable<KeyValuePair<TKey, TValue>> PreOrderTraversal()
+    {
+        return PreOrderTraversal(root);
+    }
+
+    private IEnumerable<KeyValuePair<TKey, TValue>> PreOrderTraversal(
+    TreeNode<TKey, TValue> node)
+    {
+        if (node == null)
+        {
+            yield break;
+        }
+
+        yield return new KeyValuePair<TKey, TValue>(node.Key, node.Value);
+
+        foreach (var item in PreOrderTraversal(node.Left))
+        {
+            yield return item;
+        }
+     
+        foreach (var item in PreOrderTraversal(node.Right))
+        {
+            yield return item;
+        }
+    }
+
+    public virtual IEnumerable<KeyValuePair<TKey, TValue>> PostOrderTraversal()
+    {
+        return PostOrderTraversal(root);
+    }
+
+    private IEnumerable<KeyValuePair<TKey, TValue>> PostOrderTraversal(
+    TreeNode<TKey, TValue> node)
+    {
+        if (node == null)
+        {
+            yield break;
+        }
+
+        foreach (var item in PostOrderTraversal(node.Left))
+        {
+            yield return item;
+        }
+
+        foreach (var item in PostOrderTraversal(node.Right))
+        {
+            yield return item;
+        }
+
+        yield return new KeyValuePair<TKey, TValue>(node.Key, node.Value);
+    }
+
+    public virtual IEnumerable<KeyValuePair<TKey, TValue>> LevelOrderTraversal()
+    {
+        return LevelOrderTraversal(root);
+    }
+
+    private IEnumerable<KeyValuePair<TKey, TValue>> LevelOrderTraversal(
+    TreeNode<TKey, TValue> node)
+    {
+        if(node == null)
+        {
+            yield break;
+        }
+
+        var queue = new Queue<TreeNode<TKey, TValue>>();
+        queue.Enqueue(node);
+
+        while(queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            yield return new KeyValuePair<TKey, TValue>(current.Key, current.Value);
+            
+            if (current.Left != null)
+            {
+                queue.Enqueue(current.Left);
+            }
+            if (current.Right != null)
+            {
+                queue.Enqueue(current.Right);
+            }
+        }
     }
 }

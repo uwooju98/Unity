@@ -51,6 +51,7 @@ public class DoublyLinkedList<T> : IEnumerable<T>
         if (head == null)
         {
             head = node;
+            //tail = node;
         }
         else
         {
@@ -59,11 +60,12 @@ public class DoublyLinkedList<T> : IEnumerable<T>
             node.Next = current;
             current.Previous = head;
         }
-
+        //이 부분 삭제
         if (tail == null)
         {
             tail = node;
         }
+        // 
         Count++;
         return node;
     }
@@ -84,6 +86,11 @@ public class DoublyLinkedList<T> : IEnumerable<T>
             tail.Next = node;
             node.Previous = tail;
             tail = node;
+
+            //순서 변경
+            //node.Previous = tail;
+            //tail.Next = node;
+            //tail = node;
         }
         Count++;
         return node;
@@ -106,6 +113,10 @@ public class DoublyLinkedList<T> : IEnumerable<T>
         newNode.Previous = node;
         newNode.Next = current;
         current.Previous = newNode;
+
+        //순서변경
+        //newNode.Previous = node;
+        //node.Next = newNode;
 
         Count++;
         return newNode;
@@ -199,6 +210,26 @@ public class DoublyLinkedList<T> : IEnumerable<T>
         node.List = null;
 
         Count--;
+
+        /////
+        //if (node.Previous == null)
+        //{
+        //    head = node.Next;
+        //}
+        //else
+        //{
+        //    node.Previous.Next = node.Next;
+        //}
+
+        //if (node.Next == null)
+        //{
+        //    tail = node.Previous;
+        //}
+        //else
+        //{
+        //    node.Next.Previous = node.Previous;
+        //}
+        /////
     }
 
     public DoublyLinkedListNode<T> Find(T value)
