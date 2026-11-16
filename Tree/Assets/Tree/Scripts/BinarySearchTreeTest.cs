@@ -19,6 +19,7 @@ public class BinarySearchTreeTest : MonoBehaviour
 {
     public TreeVisualizer treeVisualizer;
 
+
     public int nodeCount = 10;
 
     public int minKey = 1;
@@ -41,7 +42,7 @@ public class BinarySearchTreeTest : MonoBehaviour
     [ContextMenu("tree")]
     public void GenerateRandomTree()
     {
-        var tree = new BinarySearchTestTree<int, string>();
+        var tree = new AVLTestTree<int, string>();
 
         for (int i = 0; i < nodeCount; i++)
         {
@@ -54,14 +55,12 @@ public class BinarySearchTreeTest : MonoBehaviour
             }
         }
 
-        if (treeVisualizer != null)
-        {
+
             treeVisualizer.Visualize(tree.GetRoot());
-        }
-        else
-        {
-            Debug.LogError("TreeVisualizer가 연결되지 않았습니다.");
-        }
+        
+        
+           Debug.LogError($"[AVL] 균형 {(tree.IsBalanced() ? "O" : "X")}");
+        
     }
 
     void TestBinarySearchTree()
