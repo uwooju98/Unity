@@ -1,6 +1,5 @@
 using System.Linq;
 using UnityEngine; // 추가
-
 public enum TileTypes
 {
     Empty = -1,
@@ -9,11 +8,11 @@ public enum TileTypes
     // 15 땅
     Grass = 15,
     Tree = 16,
-    Hills, //언덕
-    Mountains, //산
-    Towns, // 마을
-    Castle, //성 1개만
-    Monster, //던전
+    Hills = 17,
+    Mountains = 18,
+    Towns = 19, // 마을
+    Castles = 20, //성 1개만
+    Monster = 21, //던전
 }
 
 public class Map
@@ -34,6 +33,19 @@ public class Map
     public Tile[] GrassTiles => tiles
     .Where(t => t.autoTileId == (int)TileTypes.Grass)
     .ToArray();
+
+    public Tile[] CastlesTiles => tiles
+    .Where(t => t.autoTileId == (int)TileTypes.Castles)
+    .ToArray();
+
+    public Tile[] TownsTiles => tiles
+    .Where(t => t.autoTileId == (int)TileTypes.Towns)
+    .ToArray();
+
+    public Tile startTile;
+    public Tile endTile;
+
+
 
     public void Init(int rows, int cols)
     {
@@ -87,37 +99,27 @@ public class Map
         }
     }
 
-    public bool CreateTree(float erodePercent,
-        float erodeIterations,
-        float TreePercent)
+    public void CreateObject(MapSettings mapSettings)
     {
-        DecorateTiles(
-            GrassTiles, TreePercent, TileTypes.Tree);
+        DecorateTiles(GrassTiles, mapSettings.castlesCount, TileTypes.Castles);
+        DecorateTiles(GrassTiles, mapSettings.townsCount, TileTypes.Towns);
 
-        for (int i = 0; i < erodeIterations; ++i)
-        {
-            DecorateTiles(
-                CoastTiles, erodePercent, TileTypes.Empty);
-        }
-
-        return true;
+        DecorateTiles(GrassTiles, mapSettings.treePercent, TileTypes.Tree);
+        DecorateTiles(GrassTiles, mapSettings.hillsPercent, TileTypes.Hills);
+        DecorateTiles(GrassTiles, mapSettings.mountainsPercent, TileTypes.Mountains);
+        DecorateTiles(GrassTiles, mapSettings.monsterPercent, TileTypes.Monster);
     }
 
     // 추가: 섬 생성
-    public bool CreateIsland(
-        float erodePercent,
-        float erodeIterations,
-        float lakePercent)
+    public bool CreateIsland(MapSettings mapSettings)
     {
         // 육지 내부에 호수 생성
-        DecorateTiles(
-            LandTiles, lakePercent, TileTypes.Empty);
+        DecorateTiles(LandTiles, mapSettings.lakePercent, TileTypes.Empty);
 
         // 해안선 침식
-        for (int i = 0; i < erodeIterations; ++i)
+        for (int i = 0; i < mapSettings.erodeIterations; ++i)
         {
-            DecorateTiles(
-                CoastTiles, erodePercent, TileTypes.Empty);
+            DecorateTiles(CoastTiles, mapSettings.erodePercent, TileTypes.Empty);
         }
 
         return true;
@@ -129,20 +131,24 @@ public class Map
     {
         int total = Mathf.FloorToInt(tile.Length * percent);
 
-        ShuffleTiles(tile);
+        DecorateTiles(tile, total, tileType);
+    }
 
-        for (int i = 0; i < total; ++i)
+    public void DecorateTiles(
+        Tile[] tile, int count, TileTypes tileType)
+    {
+        ShuffleTiles(tile);
+        for (int i = 0; i < count; ++i)
         {
             if (tileType == TileTypes.Empty)
             {
                 tile[i].ClearAdjacents();
             }
-
             tile[i].autoTileId = (int)tileType;
         }
     }
 
-    // 추가: 피셔-예이츠 셔플 알고리즘
+
     public void ShuffleTiles(Tile[] tiles)
     {
         for (int i = tiles.Length - 1; i > 0; --i)
@@ -152,6 +158,45 @@ public class Map
             Tile temp = tiles[i];
             tiles[i] = tiles[index];
             tiles[index] = temp;
+        }
+    }
+
+    public void SelectPathPoints()
+    {
+        var towns = TownsTiles;
+        var castles = CastlesTiles;
+
+        startTile = towns[Random.Range(0, towns.Length)];
+        endTile = castles[Random.Range(0, castles.Length)];
+    }
+
+    public void SetWeights()
+    {
+        foreach (var tile in tiles)
+        {
+            switch ((TileTypes)tile.autoTileId)
+            {
+                case TileTypes.Empty:
+                case TileTypes.Mountains:
+                    tile.weight = -1;
+                    break;
+
+                case TileTypes.Tree:
+                    tile.weight = 3;
+                    break;
+
+                case TileTypes.Hills:
+                    tile.weight = 5;
+                    break;
+
+                case TileTypes.Monster:
+                    tile.weight = 10;
+                    break;
+
+                default:
+                    tile.weight = 1;
+                    break;
+            }
         }
     }
 }

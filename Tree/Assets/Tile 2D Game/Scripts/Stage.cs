@@ -1,32 +1,61 @@
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class Stage : MonoBehaviour
 {
     public GameObject tilePrefab;
+
+    public Player playerPrefab;
+    private Player player;
+    
     public GameObject[] tileObjs;
+
+    public MapSettings mapSettings = new MapSettings();
 
     public int mapWidth = 20;
     public int mapHeight = 20;
 
+
+    public SearchType searchType;
+
     public Vector2 tileSize = new Vector2(16, 16);
 
     public Sprite[] islandSprites;
-
     private Map map;
-
     public Map Map => map;
 
-    // 추가: 해안선 침식 비율
-    [Range(0f, 1f)]
-    public float erodePercent = 0.3f;
+    private PathFinder pathFinder = new PathFinder();
 
-    // 추가: 침식 반복 횟수
-    public float erodeIterations = 2;
+    [ContextMenu("Start Search")]
+    public void StartSearch()
+    {
+        map.SelectPathPoints();
 
-    // 추가: 호수 생성 비율
-    [Range(0f, 1f)]
-    public float lakePercent = 0.1f;
-    public float TreePercent = 0.1f;
+        bool success = false;
+        switch (searchType)
+        {
+            case SearchType.DFS:
+                success = pathFinder.DFS(map.startTile, map.endTile);
+                break;
+            case SearchType.BFS:
+                success = pathFinder.BFS(map.startTile, map.endTile);
+                break;
+            case SearchType.AStar:
+                success = pathFinder.AStar(map.startTile, map.endTile, mapWidth);
+                break;
+        }
+
+        Debug.Log(success ? "성공" : "실패");
+
+        if (success)
+        {
+            CreatePlayer();
+            var pathPosition = GetPathPositions();
+            StartCoroutine(player.MovePath(pathPosition));
+        }
+    }
 
     [ContextMenu("Reset Stage")]
     public void ResetStage()
@@ -34,14 +63,12 @@ public class Stage : MonoBehaviour
         map = new Map();
         map.Init(mapHeight, mapWidth);
 
-        // 추가: 섬 생성
-        map.CreateIsland(
-            erodePercent,
-            erodeIterations,
-            lakePercent);
-        map.CreateTree(erodePercent,
-            erodeIterations,
-            TreePercent);
+        
+        map.CreateIsland(mapSettings);
+        map.CreateObject(mapSettings);
+        map.SetWeights();
+
+
         CreateGrid();
     }
 
@@ -97,5 +124,32 @@ public class Stage : MonoBehaviour
         {
             ren.sprite = null;
         }
+    }
+
+    private void CreatePlayer()
+    {
+        if (player != null)
+        {
+            Destroy(player.gameObject);
+        }
+
+        var original = playerPrefab;
+        var position = tileObjs[map.startTile.id].transform.position;
+        var rotation = Quaternion.identity;
+
+        player = Instantiate(original, position, rotation);
+    }
+
+    private List<Vector3> GetPathPositions()
+    {
+        List<Vector3> paths = new List<Vector3>();
+
+        foreach (var path in pathFinder.path)
+        {
+            var pathPosition = tileObjs[path.id].transform.position;
+            paths.Add(pathPosition);
+        }
+
+        return paths;
     }
 }

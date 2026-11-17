@@ -13,6 +13,10 @@ public class Tile
 
     public int autoTileId;
 
+    public int weight;
+    public Tile previous;
+    public bool CanVisit => weight >= 1;
+
     public void UpdateAutoTileId()
     {
         autoTileId = 0;
@@ -52,4 +56,6 @@ public class Tile
 
         UpdateAutoTileId();
     }
+
+
 }

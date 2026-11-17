@@ -181,7 +181,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 100
+  orthographic size: 175
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -206,8 +206,8 @@ Transform:
   m_GameObject: {fileID: 260750215}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 150, y: -150, z: -10}
+  m_LocalScale: {x: 0.9125, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -286,9 +286,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Stage
   tilePrefab: {fileID: 5027896611854653487, guid: 3735dbeafe150e14bb604d1784fb13d2, type: 3}
+  playerPrefab: {fileID: 6173286711931913496, guid: 50bff0686dbe9004f818d059966040fc, type: 3}
   tileObjs: []
+  mapSettings:
+    erodePercent: 0.3
+    erodeIterations: 2
+    castlesCount: 1
+    townsCount: 3
+    lakePercent: 0.03
+    treePercent: 0.05
+    hillsPercent: 0.1
+    mountainsPercent: 0.05
+    monsterPercent: 0.05
   mapWidth: 20
   mapHeight: 20
+  searchType: 0
   tileSize: {x: 16, y: 16}
   islandSprites:
   - {fileID: 21300000, guid: 6dda2095192964815b349ac505a5e664, type: 3}
@@ -313,10 +325,6 @@ MonoBehaviour:
   - {fileID: 21300038, guid: 6dda2095192964815b349ac505a5e664, type: 3}
   - {fileID: 21300040, guid: 6dda2095192964815b349ac505a5e664, type: 3}
   - {fileID: 21300042, guid: 6dda2095192964815b349ac505a5e664, type: 3}
-  erodePercent: 0.3
-  erodeIterations: 2
-  lakePercent: 0.01
-  TreePercent: 0.1
 --- !u!4 &1586317826
 Transform:
   m_ObjectHideFlags: 0
@@ -326,7 +334,7 @@ Transform:
   m_GameObject: {fileID: 1586317824}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.20933, y: -3.43948, z: 0}
+  m_LocalPosition: {x: -150, y: 150, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
