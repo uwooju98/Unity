@@ -1,5 +1,5 @@
 using System.Linq;
-using UnityEngine; // 추가
+using UnityEngine;
 public enum TileTypes
 {
     Empty = -1,
