@@ -6,7 +6,6 @@ public enum TileTypes
 {
     Empty = -1,
 
-    // 0, 14
     Grass = 15,
     Trees,
     Hills,
@@ -23,9 +22,10 @@ public class Map
     public int cols = 0;
 
     public Tile[] tiles;
+    public Tile startTile;
+    public Tile castleTile;
 
-    public Tile[] CoastTiles =>
-        tiles.Where(t => t.autoTileId >= 0 && t.autoTileId < (int)TileTypes.Grass).ToArray();
+    public Tile[] CoastTiles => tiles.Where(t => t.autoTileId >= 0 && t.autoTileId < (int)TileTypes.Grass).ToArray();
 
     public Tile[] LandTiles => tiles.Where(t => t.autoTileId >= (int)TileTypes.Grass).ToArray();
 
@@ -42,7 +42,7 @@ public class Map
 
         for (int r = 0; r < rows; ++r)
         {
-            for (int c = 0; c < rows; ++c)
+            for (int c = 0; c < cols; ++c)
             {
                 int index = r * cols + c;
                 var adjacents = tiles[index].adjacents;
@@ -68,22 +68,16 @@ public class Map
         for (int i = 0; i < tiles.Length; ++i)
         {
             tiles[i].UpdateAutoTileId();
+            tiles[i].fowAutoTileId = tiles[i].autoTileId;
+
+            for (int j = 0; j < tiles[i].adjacents.Length; j++)
+            {
+                tiles[i].fowAdjacents[j] = tiles[i].adjacents[j];
+            }
         }
     }
 
-    public Tile startTile;
-    public Tile castleTile;
-
-    public bool CreateIsland(
-        float erodePercent,
-        float erodeIterations,
-        float lakePercent,
-        float treePercent,
-        float hillPercent,
-        float moutainPercent,
-        float townPercent,
-        float monsterPercent
-    )
+    public bool CreateIsland(float erodePercent, float erodeIterations, float lakePercent, float treePercent, float hillPercent, float moutainPercent, float townPercent, float monsterPercent)
     {
         DecorateTiles(LandTiles, lakePercent, TileTypes.Empty);
 
@@ -113,22 +107,31 @@ public class Map
         return PathFinding(startTile, castleTile) != null;
     }
 
-    private int Heuristic(Tile a, Tile b)
+    public void DecorateTiles(Tile[] tiles, float percent, TileTypes tileType)
     {
-        int ax = a.id % cols;
-        int ay = a.id / cols;
+        int total = Mathf.FloorToInt(tiles.Length * percent);
 
-        int bx = b.id % cols;
-        int by = b.id / cols;
+        ShuffleTiles(tiles);
 
-        return Mathf.Abs(ax - bx) + Mathf.Abs(ay - by);
+        for (int i = 0; i < total; ++i)
+        {
+            if (tileType == TileTypes.Empty)
+            {
+                tiles[i].ClearAdjacents();
+            }
+            tiles[i].autoTileId = (int)tileType;
+        }
     }
 
-    private void ResetTilePrevious()
+    public void ShuffleTiles(Tile[] tiles)
     {
-        foreach (var tile in tiles)
+
+        for (int i = tiles.Length - 1; i > 0; --i)
         {
-            tile.previous = null;
+            int index = Random.Range(0, i + 1);
+            Tile temp = tiles[i];
+            tiles[i] = tiles[index];
+            tiles[index] = temp;
         }
     }
 
@@ -144,7 +147,7 @@ public class Map
             distances[i] = int.MaxValue;
         }
         distances[start.id] = 0;
-        pQueue.Enqueue(start, distances[start.id] + Heuristic(start, end));
+        pQueue.Enqueue(start, distances[start.id] + ManhattanDistance(start, end));
 
         bool success = false;
         while (pQueue.Count > 0)
@@ -171,7 +174,7 @@ public class Map
                 {
                     distances[adjacent.id] = newDistance;
                     adjacent.previous = currentNode;
-                    pQueue.Enqueue(adjacent, newDistance + Heuristic(adjacent, end));
+                    pQueue.Enqueue(adjacent, newDistance + ManhattanDistance(adjacent, end));
                 }
             }
         }
@@ -192,31 +195,75 @@ public class Map
         return path;
     }
 
-    public void DecorateTiles(Tile[] tiles, float percent, TileTypes tileType)
+    private void ResetTilePrevious()
     {
-        int total = Mathf.FloorToInt(tiles.Length * percent);
-
-        ShuffleTiles(tiles);
-
-        for (int i = 0; i < total; ++i)
+        foreach (var tile in tiles)
         {
-            if (tileType == TileTypes.Empty)
-            {
-                tiles[i].ClearAdjacents();
-            }
-            tiles[i].autoTileId = (int)tileType;
+            tile.previous = null;
         }
     }
 
-    public void ShuffleTiles(Tile[] tiles)
+    private int ManhattanDistance(Tile a, Tile b)
     {
-        // 피셔 예이츠 셔플 알고리즘
-        for (int i = tiles.Length - 1; i > 0; --i)
+        int ax = a.id % cols;
+        int ay = a.id / cols;
+
+        int bx = b.id % cols;
+        int by = b.id / cols;
+
+        return Mathf.Abs(ax - bx) + Mathf.Abs(ay - by);
+    }
+
+    public List<Tile> GetTilesInRange(Tile center, int range)
+    {
+        List<Tile> result = new List<Tile>();
+
+        int x = center.id % cols;
+        int y = center.id / cols;
+
+        int minX = Mathf.Max(0, x - range);
+        int maxX = Mathf.Min(cols - 1, x + range);
+
+        int minY = Mathf.Max(0, y - range);
+        int maxY = Mathf.Min(rows - 1, y + range);
+
+        for (int r = minY; r <= maxY; ++r)
         {
-            int index = Random.Range(0, i + 1);
-            Tile temp = tiles[i];
-            tiles[i] = tiles[index];
-            tiles[index] = temp;
+            for (int c = minX; c <= maxX; ++c)
+            {
+                int index = r * cols + c;
+                var tile = tiles[index];
+
+                var distance = ManhattanDistance(tile, center);
+                if (distance <= range)
+                {
+                    result.Add(tile);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public void VisitTile(int tileId, int range, out List<Tile> revealedTiles, out HashSet<Tile> changedTiles)
+    {
+        tiles[tileId].isVisited = true;
+
+        var rangeTiles = GetTilesInRange(tiles[tileId], range);
+        revealedTiles = new List<Tile>();
+        changedTiles = new HashSet<Tile>();
+
+        foreach (var tile in rangeTiles)
+        {
+            if (tile.isRevealed)
+            {
+                continue;
+            }
+
+            tile.isRevealed = true;
+
+            changedTiles.UnionWith(tile.ClearFowAdjacents());
+            revealedTiles.Add(tile);
         }
     }
 }

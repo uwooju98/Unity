@@ -1,23 +1,20 @@
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class Stage : MonoBehaviour
 {
-    public GameObject tilePrefab;
-    public GameObject[] tileObjs;
-
     public int mapWidth = 20;
     public int mapHeight = 20;
-
     public Vector2 tileSize = new Vector2(16, 16);
+    public Vector3 firstTilePos;
+
+    public GameObject tilePrefab;
+    public GameObject playerPrefab;
 
     public Sprite[] islandSprites;
-
     public Sprite[] fowSprites;
 
-    private Map map;
-
-    public Map Map => map;
+    public int fowPercent = 1;
 
     [Range(0f, 0.9f)]
     public float erodePercent = 0.3f;
@@ -41,13 +38,18 @@ public class Stage : MonoBehaviour
     [Range(0f, 0.9f)]
     public float monsterPercent = 0.1f;
 
+    [System.NonSerialized]
+    public GameObject[] tileObjs;
+
+    private Map map;
+    private Player player;
+
+    public Map Map => map;
+
     private void Awake()
     {
         ResetStage();
     }
-
-
-
 
     [ContextMenu("Reset Stage")]
     public void ResetStage()
@@ -56,65 +58,23 @@ public class Stage : MonoBehaviour
         bool succeed = false;
         int maxAttemp = 10;
 
-
         for (int i = 0; i < maxAttemp && !succeed; ++i)
         {
             map.Init(mapHeight, mapWidth);
 
+            succeed = map.CreateIsland(erodePercent, erodeIterations, lakePercent, treePercent, hillPercent, moutainPercent, townPercent, monsterPercent);
 
-
-            succeed = map.CreateIsland(
-                erodePercent,
-                erodeIterations,
-                lakePercent,
-                treePercent,
-                hillPercent,
-                moutainPercent,
-                townPercent,
-                monsterPercent
-            );
-
-
-            //if (!succeed)
-            //{
-            //    Debug.LogError("맵 생성 실패");
-            //    map = null;
-            //    return;
-            //}
-
+            if (!succeed)
+            {
+                Debug.LogError("맵 생성 실패");
+                map = null;
+                return;
+            }
 
             CreateGrid();
-            for (int j = 0; j < tileObjs.Length; j++)
-            {
-                var tile = map.tiles[j];
-                var ren = tileObjs[j].GetComponent<SpriteRenderer>();
-
-                ren.sprite = fowSprites[tile.autoTileId];
-            }
-            //    CreatePlayer();
+            InitializeFowSprites();
+            CreatePlayer();
         }
-    }
-
-    public Vector3 firstTilePos;
-
-    public GameObject playerPrefab;
-
-    private Player player;
-
-    public void OnTileVisited(int tileId)
-    {
-        Debug.Log($"OnTileVisited({tileId}: {tileId / mapWidth}, {tileId % mapHeight}) / {map.tiles[tileId].autoTileId}");
-    }
-
-    private void CreatePlayer()
-    {
-        if (player != null)
-        {
-            Destroy(player.gameObject);
-            player = null;
-        }
-
-        Instantiate(playerPrefab, GetTilePos(map.startTile.id), Quaternion.identity);
     }
 
     private void CreateGrid()
@@ -144,7 +104,6 @@ public class Stage : MonoBehaviour
                 newGo.name = $"Tile {tileId} ({i}, {j})";
                 tileObjs[tileId] = newGo;
 
-                
                 DecorateTile(tileId);
             }
             pos.x = startX;
@@ -152,7 +111,39 @@ public class Stage : MonoBehaviour
         }
     }
 
+    private void CreatePlayer()
+    {
+        if (player != null)
+        {
+            Destroy(player.gameObject);
+            player = null;
+        }
 
+        Instantiate(playerPrefab, GetTilePos(map.startTile.id), Quaternion.identity);
+    }
+
+    private void InitializeFowSprites()
+    {
+        for (int j = 0; j < map.tiles.Length; j++)
+        {
+            var tile = map.tiles[j];
+            var ren = tileObjs[tile.id].GetComponent<SpriteRenderer>();
+
+            ren.sprite = fowSprites[tile.fowAutoTileId];
+        }
+    }
+
+    public void OnTileVisited(int tileId, int range)
+    {
+        map.VisitTile(tileId, range, out var revealedTiles, out var changedTiles);
+
+        foreach (var tile in revealedTiles)
+        {
+            DecorateTile(tile.id);
+        }
+
+        UpdateFowSprites(changedTiles);
+    }
 
     public void DecorateTile(int tileId)
     {
@@ -169,6 +160,20 @@ public class Stage : MonoBehaviour
         }
     }
 
+    public void UpdateFowSprites(HashSet<Tile> changedTiles)
+    {
+        foreach (var tile in changedTiles)
+        {
+            if (tile.isRevealed)
+            {
+                continue;
+            }
+
+            var ren = tileObjs[tile.id].GetComponent<SpriteRenderer>();
+
+            ren.sprite = fowSprites[tile.fowAutoTileId];
+        }
+    }
 
     public int ScreenPosTileId(Vector3 screenPos, bool clamp = true)
     {

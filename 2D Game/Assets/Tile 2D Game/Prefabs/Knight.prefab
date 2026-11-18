@@ -128,3 +128,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   moveSpeed: 150
+  visionRange: 5
