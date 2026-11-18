@@ -61,7 +61,6 @@ public class Map
 
         for (int r = 0; r < rows; ++r)
         {
-            // 수정: rows → cols
             for (int c = 0; c < cols; ++c)
             {
                 int index = r * cols + c;
@@ -110,13 +109,11 @@ public class Map
         DecorateTiles(GrassTiles, mapSettings.monsterPercent, TileTypes.Monster);
     }
 
-    // 추가: 섬 생성
+
     public bool CreateIsland(MapSettings mapSettings)
     {
-        // 육지 내부에 호수 생성
         DecorateTiles(LandTiles, mapSettings.lakePercent, TileTypes.Empty);
 
-        // 해안선 침식
         for (int i = 0; i < mapSettings.erodeIterations; ++i)
         {
             DecorateTiles(CoastTiles, mapSettings.erodePercent, TileTypes.Empty);
@@ -125,7 +122,6 @@ public class Map
         return true;
     }
 
-    // 추가: 타일 타입 변경
     public void DecorateTiles(
         Tile[] tile, float percent, TileTypes tileType)
     {
