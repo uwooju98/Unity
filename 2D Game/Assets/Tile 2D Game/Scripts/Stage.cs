@@ -103,9 +103,9 @@ public class Stage : MonoBehaviour
 
                 newGo.name = $"Tile {tileId} ({i}, {j})";
                 tileObjs[tileId] = newGo;
-
-                DecorateTile(tileId);
             }
+
+            
             pos.x = startX;
             pos.y -= tileSize.y;
         }
@@ -139,17 +139,20 @@ public class Stage : MonoBehaviour
 
         foreach (var tile in revealedTiles)
         {
-            DecorateTile(tile.id);
+            SpriteTile(tile.id);
         }
 
         UpdateFowSprites(changedTiles);
     }
 
-    public void DecorateTile(int tileId)
+    public void SpriteTile(int tileId)
     {
         var tile = map.tiles[tileId];
         var tileGo = tileObjs[tileId];
         var ren = tileGo.GetComponent<SpriteRenderer>();
+
+
+
         if (tile.autoTileId != (int)TileTypes.Empty)
         {
             ren.sprite = islandSprites[tile.autoTileId];

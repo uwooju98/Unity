@@ -147,7 +147,7 @@ public class Map
             distances[i] = int.MaxValue;
         }
         distances[start.id] = 0;
-        pQueue.Enqueue(start, distances[start.id] + ManhattanDistance(start, end));
+        pQueue.Enqueue(start, distances[start.id] + Heuristic(start, end));
 
         bool success = false;
         while (pQueue.Count > 0)
@@ -174,7 +174,7 @@ public class Map
                 {
                     distances[adjacent.id] = newDistance;
                     adjacent.previous = currentNode;
-                    pQueue.Enqueue(adjacent, newDistance + ManhattanDistance(adjacent, end));
+                    pQueue.Enqueue(adjacent, newDistance + Heuristic(adjacent, end));
                 }
             }
         }
@@ -203,7 +203,7 @@ public class Map
         }
     }
 
-    private int ManhattanDistance(Tile a, Tile b)
+    private int Heuristic(Tile a, Tile b)
     {
         int ax = a.id % cols;
         int ay = a.id / cols;
@@ -234,7 +234,7 @@ public class Map
                 int index = r * cols + c;
                 var tile = tiles[index];
 
-                var distance = ManhattanDistance(tile, center);
+                var distance = Heuristic(tile, center);
                 if (distance <= range)
                 {
                     result.Add(tile);
